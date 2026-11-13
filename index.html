@@ -51,29 +51,44 @@
 		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
 
 		<h2>Part 1: Masses and springs</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>
+			I represented the cloth as a two-dimensional grid of point masses stored in
+			row-major order. Depending on the selected orientation, the masses were
+			positioned in either the xz-plane or the xy-plane. I then connected neighboring
+			masses with three types of springs: structural springs between adjacent
+			horizontal and vertical masses, shearing springs between diagonal neighbors,
+			and bending springs between masses separated by two grid positions.
+		</p>
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+		<p>
+			The following images compare the cloth wireframe under different spring
+			constraint configurations. Structural and bending constraints produce the
+			horizontal and vertical grid structure, while shearing constraints create
+			diagonal connections between neighboring point masses.
+		</p>
+
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="assets/clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="assets/part1_no_shearing.png"
+				       alt="Cloth wireframe without shearing constraints"
+				       style="width: 100%; max-width: 600px;"/>
+				  <figcaption>Structural and bending constraints, without shearing.</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="assets/clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="assets/part1_only_shearing.png"
+				       alt="Cloth wireframe with only shearing constraints"
+				       style="width: 100%; max-width: 600px;"/>
+				  <figcaption>Only shearing constraints.</figcaption>
 				</td>
 			  </tr>
 			  <tr>
-				<td style="text-align: center;">
-				  <img src="assets/clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="assets/clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				<td colspan="2" style="text-align: center; padding-top: 20px;">
+				  <img src="assets/part1_all_constraints.png"
+				       alt="Cloth wireframe with all constraints"
+				       style="width: 100%; max-width: 600px;"/>
+				  <figcaption>Structural, shearing, and bending constraints enabled.</figcaption>
 				</td>
 			  </tr>
 			</table>
