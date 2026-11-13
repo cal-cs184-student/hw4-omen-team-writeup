@@ -95,10 +95,160 @@
 		</div>
 
 		<h2>Part 2: Simulation via numerical integration</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>
+			For each simulation step, I reset the force on every point mass and accumulated
+			external forces using Newton's second law. I then applied Hooke's law to every
+			enabled spring, using a reduced spring constant for bending springs. I updated
+			each unpinned point mass with Verlet integration and included the damping term
+			to reduce its previous displacement. Finally, I applied a deformation constraint
+			that prevents any spring from stretching beyond 110% of its rest length. When
+			one endpoint is pinned, the entire correction is applied to the unpinned endpoint;
+			otherwise, the correction is divided evenly between the two masses.
+		</p>
+
+		<h3>Effect of the spring constant</h3>
+		<p>
+			With a low spring constant of \(k_s = 500\), the springs exert weaker restoring
+			forces, so the cloth is more flexible and exhibits greater sagging and deformation.
+			At \(k_s = 50000\), the much stronger restoring forces resist stretching and make
+			the cloth appear stiffer and smoother as it falls.
+		</p>
+		<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			<tr>
+				<td style="width: 50%; vertical-align: top;">
+					<img src="assets/part2_low_ks.png" alt="Cloth with ks equal to 500"
+					     style="width: 100%; max-width: 600px;"/>
+					<figcaption>Low spring constant: \(k_s = 500\).</figcaption>
+				</td>
+				<td style="width: 50%; vertical-align: top;">
+					<img src="assets/part2_high_ks.png" alt="Cloth with ks equal to 50000"
+					     style="width: 100%; max-width: 600px;"/>
+					<figcaption>High spring constant: \(k_s = 50000\).</figcaption>
+				</td>
+			</tr>
+		</table>
+
+		<h3>Effect of density</h3>
+		<p>
+			With density set to \(1.5\,\mathrm{g/cm^2}\), the cloth has less mass and the
+			springs resist its weight more effectively. At \(150\,\mathrm{g/cm^2}\), gravity
+			produces a much larger load relative to the spring forces, resulting in more
+			pronounced sagging and curvature. Both tests used \(k_s = 5000\) and approximately
+			0.2% damping.
+		</p>
+		<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			<tr>
+				<td style="width: 50%; vertical-align: top;">
+					<img src="assets/part2_low_density.png" alt="Low-density cloth"
+					     style="width: 100%; max-width: 600px;"/>
+					<figcaption>Low density: \(1.5\,\mathrm{g/cm^2}\).</figcaption>
+				</td>
+				<td style="width: 50%; vertical-align: top;">
+					<img src="assets/part2_high_density.png" alt="High-density cloth"
+					     style="width: 100%; max-width: 600px;"/>
+					<figcaption>High density: \(150\,\mathrm{g/cm^2}\).</figcaption>
+				</td>
+			</tr>
+		</table>
+
+		<h3>Effect of damping</h3>
+		<p>
+			Damping primarily changes the transient motion rather than the final equilibrium
+			shape. With 0% damping, the cloth retains its energy and continues swinging,
+			folding, and oscillating. The default damping of approximately 0.2% removes a
+			small amount of energy each step. At 1% damping, energy dissipates more quickly,
+			so the motion is more controlled and the cloth settles sooner.
+		</p>
+		<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			<tr>
+				<td style="width: 33.33%; vertical-align: top;">
+					<img src="assets/part2_low_damping.png" alt="Cloth with zero damping"
+					     style="width: 100%; max-width: 500px;"/>
+					<figcaption>Low damping: 0%.</figcaption>
+				</td>
+				<td style="width: 33.33%; vertical-align: top;">
+					<img src="assets/part2_default_damping.png" alt="Cloth with default damping"
+					     style="width: 100%; max-width: 500px;"/>
+					<figcaption>Default damping: approximately 0.2%.</figcaption>
+				</td>
+				<td style="width: 33.33%; vertical-align: top;">
+					<img src="assets/part2_high_damping.png" alt="Cloth with one percent damping"
+					     style="width: 100%; max-width: 500px;"/>
+					<figcaption>High damping: 1%.</figcaption>
+				</td>
+			</tr>
+		</table>
+
+		<h3>Four-pinned cloth at rest</h3>
+		<p>
+			The following image shows <code>scene/pinned4.json</code> after the cloth reached
+			its resting state using the default parameters: density \(15\,\mathrm{g/cm^2}\),
+			\(k_s = 5000\), and 0.2% damping.
+		</p>
+		<figure>
+			<img src="assets/part2_pinned4_final.png"
+			     alt="Phong-shaded four-pinned cloth in its final resting state"
+			     style="width: 100%; max-width: 800px;"/>
+			<figcaption>Phong-shaded <code>pinned4.json</code> cloth at rest.</figcaption>
+		</figure>
 
 		<h2>Part 3: Handling collisions with other objects</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>
+			I implemented collisions against spheres and planes by testing every point mass
+			against every collision object during each simulation step. For a sphere, a point
+			mass inside the radius is projected to the nearest point on the sphere's surface.
+			The correction is measured from the mass's previous position and scaled by
+			<code>1 - friction</code>, which allows friction to reduce its tangential motion.
+		</p>
+
+		<p>
+			For a plane, I compare the signed distances of the point mass's previous and
+			current positions from the plane. Opposite signs indicate that its trajectory
+			crossed the plane. I compute the intersection point along that trajectory, move
+			the mass slightly back to its original side using <code>SURFACE_OFFSET</code>, and
+			again scale the correction by <code>1 - friction</code>. This small offset prevents
+			the cloth from repeatedly intersecting the plane because of floating-point error.
+		</p>
+
+		<h3>Cloth colliding with a sphere</h3>
+		<p>
+			The following images show the cloth at rest on the sphere for three spring
+			constants. With \(k_s = 500\), the weak restoring forces allow the cloth to
+			stretch farther and form longer, narrower folds. At the default \(k_s = 5000\),
+			the deformation is more moderate. With \(k_s = 50000\), the cloth resists
+			stretching much more strongly, producing a broader and stiffer drape with less
+			vertical elongation.
+		</p>
+		<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			<tr>
+				<td style="width: 33.33%; vertical-align: top;">
+					<img src="assets/part3_sphere_ks500.png"
+					     alt="Cloth resting on a sphere with ks equal to 500"
+					     style="width: 100%; max-width: 500px;"/>
+					<figcaption>Flexible cloth: \(k_s = 500\).</figcaption>
+				</td>
+				<td style="width: 33.33%; vertical-align: top;">
+					<img src="assets/part3_sphere_ks5000.png"
+					     alt="Cloth resting on a sphere with ks equal to 5000"
+					     style="width: 100%; max-width: 500px;"/>
+					<figcaption>Default stiffness: \(k_s = 5000\).</figcaption>
+				</td>
+				<td style="width: 33.33%; vertical-align: top;">
+					<img src="assets/part3_sphere_ks50000.png"
+					     alt="Cloth resting on a sphere with ks equal to 50000"
+					     style="width: 100%; max-width: 500px;"/>
+					<figcaption>Stiff cloth: \(k_s = 50000\).</figcaption>
+				</td>
+			</tr>
+		</table>
+
+		<h3>Cloth colliding with a plane</h3>
+		<p>
+			The plane test confirmed that the cloth settles on the surface without passing
+			through it. The final shaded result will be added after completing the Phong
+			shader in Part 5 so that the cloth can be clearly distinguished from the plane.
+		</p>
+		<!-- Add the final Phong-shaded plane screenshot here after completing Part 5. -->
 
 		<h2>Part 4: Handling self-collisions</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
