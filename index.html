@@ -251,7 +251,108 @@
 		<!-- Add the final Phong-shaded plane screenshot here after completing Part 5. -->
 
 		<h2>Part 4: Handling self-collisions</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<p>
+			I handled cloth self-collisions with spatial hashing rather than testing every
+			pair of point masses. At the beginning of each simulation step, I divide space
+			into boxes with dimensions
+			\(3w/n_w \times 3h/n_h \times \max(3w/n_w, 3h/n_h)\).
+			The <code>hash_position</code> function uses the integer box coordinates to
+			produce a key, and <code>build_spatial_map</code> rebuilds a hash table that
+			maps each key to the point masses inside that box.
+		</p>
+
+		<p>
+			For each point mass, <code>self_collide</code> examines the other masses in its
+			spatial bucket. If another mass is closer than twice the cloth thickness, I
+			compute the displacement required to separate them to that minimum distance.
+			I average all corrections affecting the point mass and divide the result by
+			the number of simulation steps before applying it. A point mass is never tested
+			against itself, and pinned masses are not moved. This approach avoids the
+			quadratic cost of checking every possible pair while preventing intersecting
+			layers of cloth.
+		</p>
+
+		<h3>Self-collision over time</h3>
+		<p>
+			With the default density of \(15\,\mathrm{g/cm^2}\), \(k_s = 5000\), and
+			approximately 0.2% damping, the cloth first contacts and folds over itself,
+			accumulates several distinct layers, and eventually reaches a more restful
+			configuration on the plane. The layers remain separated instead of clipping
+			through one another.
+		</p>
+		<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			<tr>
+				<td style="width: 33.33%; vertical-align: top;">
+					<img src="assets/part4_default_early.png"
+					     alt="Early stage of cloth self-collision"
+					     style="width: 100%; max-width: 500px;"/>
+					<figcaption>Early: the cloth begins folding onto itself.</figcaption>
+				</td>
+				<td style="width: 33.33%; vertical-align: top;">
+					<img src="assets/part4_default_middle.png"
+					     alt="Middle stage of cloth self-collision"
+					     style="width: 100%; max-width: 500px;"/>
+					<figcaption>Middle: multiple separated folds accumulate.</figcaption>
+				</td>
+				<td style="width: 33.33%; vertical-align: top;">
+					<img src="assets/part4_default_late.png"
+					     alt="Late resting stage of cloth self-collision"
+					     style="width: 100%; max-width: 500px;"/>
+					<figcaption>Late: the folded cloth settles on the plane.</figcaption>
+				</td>
+			</tr>
+		</table>
+
+		<h3>Effect of density on self-collision</h3>
+		<p>
+			Both density tests used \(k_s = 5000\). At
+			\(1.5\,\mathrm{g/cm^2}\), the cloth's weight is small relative to its spring
+			forces, so it retains smoother, more regular rolled folds. At
+			\(150\,\mathrm{g/cm^2}\), gravity exerts a much larger force relative to the
+			same spring stiffness. The heavier cloth collapses and compresses more strongly,
+			producing broader and more irregular folds.
+		</p>
+		<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			<tr>
+				<td style="width: 50%; vertical-align: top;">
+					<img src="assets/part4_low_density.png"
+					     alt="Self-colliding cloth with density 1.5"
+					     style="width: 100%; max-width: 600px;"/>
+					<figcaption>Low density: \(1.5\,\mathrm{g/cm^2}\).</figcaption>
+				</td>
+				<td style="width: 50%; vertical-align: top;">
+					<img src="assets/part4_high_density.png"
+					     alt="Self-colliding cloth with density 150"
+					     style="width: 100%; max-width: 600px;"/>
+					<figcaption>High density: \(150\,\mathrm{g/cm^2}\).</figcaption>
+				</td>
+			</tr>
+		</table>
+
+		<h3>Effect of spring stiffness on self-collision</h3>
+		<p>
+			Both stiffness tests used the default density of
+			\(15\,\mathrm{g/cm^2}\). With \(k_s = 500\), the weak restoring forces allow
+			more stretching, surface rippling, and irregular deformation as the cloth folds.
+			With \(k_s = 50000\), the strong restoring forces resist stretching and preserve
+			a smoother, flatter, and more rigid folded shape.
+		</p>
+		<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			<tr>
+				<td style="width: 50%; vertical-align: top;">
+					<img src="assets/part4_low_ks.png"
+					     alt="Self-colliding cloth with ks equal to 500"
+					     style="width: 100%; max-width: 600px;"/>
+					<figcaption>Low stiffness: \(k_s = 500\).</figcaption>
+				</td>
+				<td style="width: 50%; vertical-align: top;">
+					<img src="assets/part4_high_ks.png"
+					     alt="Self-colliding cloth with ks equal to 50000"
+					     style="width: 100%; max-width: 600px;"/>
+					<figcaption>High stiffness: \(k_s = 50000\).</figcaption>
+				</td>
+			</tr>
+		</table>
 
 		<h2>Part 5: Shaders</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
